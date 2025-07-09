@@ -1,0 +1,140 @@
+<header class="bg-black text-white px-6 py-4 shadow-md sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <button
+        type="button"
+        class="md:hidden text-white focus:outline-none"
+        aria-label="Toggle navigation"
+        (click)="toggleMenu()"
+      >
+        <i class="fas fa-bars text-2xl"></i>
+      </button>
+      <a routerLink="/cakes">
+        <img src="Logo.png" alt="Babes Kitchen Logo" class="h-10" />
+      </a>
+    </div>
+
+    <nav class="hidden md:flex space-x-6 text-sm font-medium">
+      <nav class="hidden md:flex space-x-6 text-sm font-medium">
+        <a routerLink="/home" class="hover:text-blue-400">Home</a>
+        <a routerLink="/menu" class="hover:text-blue-400">Menu</a>
+        <a routerLink="/cakes" class="hover:text-blue-400">Cakes</a>
+        <a routerLink="/meals" class="hover:text-blue-400">Meals</a>
+        <a routerLink="/cart" class="hover:text-blue-400">Cart</a>
+        <a routerLink="/checkout" class="hover:text-blue-400">Checkout</a>
+        <a routerLink="/contact" class="hover:text-blue-400">Contact</a>
+      </nav>
+    </nav>
+  </div>
+
+  <div
+    class="fixed inset-0 z-40 md:hidden bg-black text-white w-2/3 max-w-xs h-full transform transition-transform duration-300"
+    [class.translate-x-0]="menuOpen"
+    [class.-translate-x-full]="!menuOpen"
+  >
+    <div class="px-6 py-4 space-y-4">
+      <button
+        type="button"
+        class="text-white text-right block ml-auto text-2xl"
+        (click)="closeMenu()"
+      >
+        ✕
+      </button>
+
+      <a routerLink="/" (click)="closeMenu()" class="block hover:text-blue-400"
+        >Home</a
+      >
+      <a
+        routerLink="/menu"
+        (click)="closeMenu()"
+        class="block hover:text-blue-400"
+        >Menu</a
+      >
+      <a
+        routerLink="/cakes"
+        (click)="closeMenu()"
+        class="block hover:text-blue-400"
+        >Cakes</a
+      >
+      <a
+        routerLink="/meals"
+        (click)="closeMenu()"
+        class="block hover:text-blue-400"
+        >Meals</a
+      >
+      <a
+        routerLink="/cart"
+        (click)="closeMenu()"
+        class="block hover:text-blue-400"
+        >Cart</a
+      >
+      <a
+        routerLink="/checkout"
+        (click)="closeMenu()"
+        class="block hover:text-blue-400"
+        >Checkout</a
+      >
+      <a
+        routerLink="/contact"
+        (click)="closeMenu()"
+        class="block hover:text-blue-400"
+        >Contact</a
+      >
+    </div>
+  </div>
+</header>
+
+<section
+  class="text-white bg-gradient-to-b from-black to-gray-900 py-20 px-6 text-center"
+>
+  <h1 class="text-4xl md:text-6xl font-bold mb-4">
+    Welcome to <span class="text-blue-400">Babes Kitchen</span>
+  </h1>
+  <p class="text-lg md:text-xl text-gray-300 mb-6 max-w-xl mx-auto">
+    Delicious meals and freshly baked cakes made with love — delivered to your
+    door.
+  </p>
+  <a
+    routerLink="/menu"
+    class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg transition duration-300"
+  >
+    Explore Our Menu
+  </a>
+</section>
+
+<section class="bg-white text-black py-16 px-6 text-center">
+  <h2 class="text-3xl md:text-4xl font-bold mb-12">
+    Why Choose Babes Kitchen?
+  </h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+    <div
+      class="p-6 bg-gray-100 shadow-lg rounded-lg transition-transform duration-300 hover:-translate-y-2"
+    >
+      <h3 class="text-xl font-semibold mb-2">🍽️ Homemade Taste</h3>
+      <p class="text-gray-700">
+        Enjoy a variety of homemade food and cakes prepared with care and
+        tradition.
+      </p>
+    </div>
+
+    <div
+      class="p-6 bg-gray-100 shadow-lg rounded-lg transition-transform duration-300 hover:-translate-y-2"
+    >
+      <h3 class="text-xl font-semibold mb-2">🎂 Customization</h3>
+      <p class="text-gray-700">
+        Get custom-designed cakes and meals tailored for every occasion and
+        taste.
+      </p>
+    </div>
+
+    <div
+      class="p-6 bg-gray-100 shadow-lg rounded-lg transition-transform duration-300 hover:-translate-y-2"
+    >
+      <h3 class="text-xl font-semibold mb-2">🚚 Fast & Fresh Delivery</h3>
+      <p class="text-gray-700">
+        Prompt delivery to your doorstep — always fresh, always flavorful.
+      </p>
+    </div>
+  </div>
+</section>
