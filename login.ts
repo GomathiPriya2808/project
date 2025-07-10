@@ -1,49 +1,94 @@
-<div class="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center px-4">
-  <form [formGroup]="loginForm"
-        (ngSubmit)="onLogin()"
-        class="w-full max-w-md bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-xl space-y-6">
+import {
+  Component,
+  signal,
+  WritableSignal,
+  effect,
+  computed,
+  inject,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import {
+  Auth,
+  signInWithEmailAndPassword,
+  UserCredential,
+  sendPasswordResetEmail,
+} from '@angular/fire/auth';
 
-    <h2 class="text-2xl font-bold text-center text-gray-800">Welcome Back</h2>
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [ReactiveFormsModule, RouterLink],
+  templateUrl: './login.html',
+  styleUrl: './login.css',
+})
+export class Login {
+  fb = inject(FormBuilder);
+  router = inject(Router);
+  auth = inject(Auth);
 
-    <div>
-      <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-      <input
-        type="email"
-        id="email"
-        formControlName="email"
-        autocomplete="email"
-        required
-        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      />
-    </div>
+  loginForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
 
-    <div>
-      <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-      <input
-        type="password"
-        id="password"
-        formControlName="password"
-        autocomplete="current-password"
-        required
-        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      />
-      <button type="button"
-              (click)="forgotPassword()"
-              class="block mt-1 text-sm text-indigo-600 hover:underline float-right">
-        Forgot password?
-      </button>
-    </div>
+  emailSignal: WritableSignal<string> = signal('');
+  passwordSignal: WritableSignal<string> = signal('');
+  errorMessage: WritableSignal<string> = signal('');
+  submitted: WritableSignal<boolean> = signal(false);
 
-    <button
-      type="submit"
-      class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition"
-    >
-      Login
-    </button>
+  formValue = computed(() => this.loginForm.value);
 
-    <p class="mt-6 text-center text-sm text-gray-200">
-      Don’t have an account?
-      <a routerLink="/signup" class="text-white font-medium hover:underline">Sign up</a>
-    </p>
-  </form>
-</div>
+  formEffect = effect(() => {
+    const { email, password } = this.formValue();
+    this.emailSignal.set(email);
+    this.passwordSignal.set(password);
+  });
+
+  onLogin() {
+    this.submitted.set(true);
+    this.errorMessage.set('');
+
+    if (this.loginForm.invalid) {
+      console.warn('Form is invalid');
+      return;
+    }
+
+    const email = this.loginForm.value.email?.trim();
+    const password = this.loginForm.value.password;
+
+    console.log('Logging in with:', email, password);
+
+    if (!email || !password) {
+      this.errorMessage.set('Email and password are required.');
+      return;
+    }
+
+    localStorage.setItem('formdata', JSON.stringify({ email, password }));
+
+    signInWithEmailAndPassword(this.auth, email, password)
+      .then((userCredential: UserCredential) => {
+        console.log('Login successful:', userCredential);
+        this.router.navigate(['/home']);
+      })
+      .catch((error: any) => {
+        console.error('Login error:', error);
+        this.errorMessage.set('Login failed: ' + error.message);
+      });
+  }
+  forgotPassword() {
+    const email = this.emailSignal();
+    if (!email) {
+      this.errorMessage.set('Please enter your email to reset password.');
+      return;
+    }
+    sendPasswordResetEmail(this.auth, email)
+      .then(() => this.errorMessage.set('Password reset email sent.'))
+      .catch((err) => this.errorMessage.set('Reset failed: ' + err.message));
+  }
+}
