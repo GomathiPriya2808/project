@@ -9,7 +9,7 @@
       >
         <i class="fas fa-bars text-2xl"></i>
       </button>
-      <a routerLink="/cakes">
+      <a routerLink="/menu">
         <img src="Logo.png" alt="Babes Kitchen Logo" class="h-10" />
       </a>
     </div>
@@ -17,7 +17,6 @@
     <nav class="hidden md:flex space-x-6 text-sm font-medium">
       <nav class="hidden md:flex space-x-6 text-sm font-medium">
         <a routerLink="/home" class="hover:text-blue-400">Home</a>
-        <a routerLink="/menu" class="hover:text-blue-400">Menu</a>
         <a routerLink="/cakes" class="hover:text-blue-400">Cakes</a>
         <a routerLink="/meals" class="hover:text-blue-400">Meals</a>
         <a routerLink="/cart" class="hover:text-blue-400">Cart</a>
@@ -41,15 +40,18 @@
         ✕
       </button>
 
-      <a routerLink="/" (click)="closeMenu()" class="block hover:text-blue-400"
+      <a
+        routerLink="/home"
+        (click)="closeMenu()"
+        class="block hover:text-blue-400"
         >Home</a
       >
-      <a
+      <!-- <a
         routerLink="/menu"
         (click)="closeMenu()"
         class="block hover:text-blue-400"
         >Menu</a
-      >
+      > -->
       <a
         routerLink="/cakes"
         (click)="closeMenu()"
@@ -136,5 +138,120 @@
         Prompt delivery to your doorstep — always fresh, always flavorful.
       </p>
     </div>
+  </div>
+</section>
+<section class="bg-gray-900 text-white py-20 px-6">
+  <h2 class="text-3xl md:text-4xl font-bold mb-10 text-center">
+    Featured Cakes
+  </h2>
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto"
+  >
+    <div class="bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+      <img
+        src="Photocake.png"
+        alt="Chocolate Truffle"
+        class="w-full h-48 object-cover rounded-md mb-4"
+      />
+      <h3 class="text-xl font-semibold">Chocolate Truffle</h3>
+      <p class="text-pink-400 font-bold">Rs. 450</p>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+      <img
+        src="Lovecake.png"
+        alt="Strawberry Cream"
+        class="w-full h-48 object-cover rounded-md mb-4"
+      />
+      <h3 class="text-xl font-semibold">Strawberry Cream</h3>
+      <p class="text-pink-400 font-bold">Rs. 480</p>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+      <img
+        src="chocolatecake.png"
+        alt="Vanilla Choco Swirl"
+        class="w-full h-48 object-cover rounded-md mb-4"
+      />
+      <h3 class="text-xl font-semibold">Vanilla Choco Swirl</h3>
+      <p class="text-pink-400 font-bold">Rs. 420</p>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+      <img
+        src="creativecake.png"
+        alt="Black Forest"
+        class="w-full h-48 object-cover rounded-md mb-4"
+      />
+      <h3 class="text-xl font-semibold">Black Forest</h3>
+      <p class="text-pink-400 font-bold">Rs. 460</p>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+      <img
+        src="DesignerCake.png"
+        alt="Black Forest"
+        class="w-full h-48 object-cover rounded-md mb-4"
+      />
+      <h3 class="text-xl font-semibold">Black Forest</h3>
+      <p class="text-pink-400 font-bold">Rs. 460</p>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+      <img
+        src="RoseCakeImage.png"
+        alt="Black Forest"
+        class="w-full h-48 object-cover rounded-md mb-4"
+      />
+      <h3 class="text-xl font-semibold">Black Forest</h3>
+      <p class="text-pink-400 font-bold">Rs. 460</p>
+    </div>
+  </div>
+</section>
+<section class="bg-white text-black py-16 px-6 text-center">
+  <h2 class="text-3xl md:text-4xl font-bold mb-8">Join Our Baking Classes</h2>
+  <p class="text-gray-600 max-w-2xl mx-auto mb-6">
+    Learn to bake like a pro! We offer hands-on classes for all age groups:
+  </p>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto text-left">
+    <div class="p-6 bg-gray-100 rounded-lg shadow-md">
+      <h3 class="text-xl font-bold mb-2">🍰 Beginner Baking</h3>
+      <p>Perfect for newcomers! Learn sponge cakes, cupcakes, and icing basics.</p>
+    </div>
+    <div class="p-6 bg-gray-100 rounded-lg shadow-md">
+      <h3 class="text-xl font-bold mb-2">🎂 Cake Decoration</h3>
+      <p>Learn to frost, layer, and decorate cakes professionally.</p>
+    </div>
+    <div class="p-6 bg-gray-100 rounded-lg shadow-md">
+      <h3 class="text-xl font-bold mb-2">👩‍🍳 Kids' Workshop</h3>
+      <p>Fun-filled baking sessions for kids aged 6–12 with take-home treats!</p>
+    </div>
+  </div>
+</section>
+
+<section class="bg-blue-50 text-black py-20 px-6 text-center">
+  <h2 class="text-3xl md:text-4xl font-bold mb-8">Our Contact</h2>
+  <p class="text-gray-600 max-w-xl mx-auto mb-6">
+    Discover our freshly baked cakes available for purchase and join our
+    hands-on baking classes to learn the art of cake-making from experts.
+  </p>
+  <form class="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-xl mx-auto mb-8">
+    <input
+      type="email"
+      placeholder="Enter your email"
+      class="px-4 py-2 rounded-md border border-gray-300 w-full sm:w-2/3"
+    />
+    <button
+      type="submit"
+      class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-md transition"
+    >
+      Send Feedback
+    </button>
+  </form>
+  <div class="max-w-xl mx-auto space-y-2">
+    <p class="text-lg">
+      <strong>Email:</strong>
+      <a href="mailto:gokilavaniraju01@gmail.com" class="text-blue-500 hover:underline">
+        gokilavaniraju01&#64;gmail.com
+      </a>
+    </p>
+    <p class="text-lg">
+      <strong>Contact No:</strong> <span>8754999909</span>
+    </p>
   </div>
 </section>
