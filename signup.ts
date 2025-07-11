@@ -19,7 +19,7 @@ import {
   createUserWithEmailAndPassword,
   UserCredential,
 } from '@angular/fire/auth';
-
+import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 @Component({
   selector: 'app-signup',
   standalone: true,
@@ -28,22 +28,20 @@ import {
   styleUrls: ['./signup.css'],
 })
 export class Signup {
-  // Signals
   nameSignal = signal('');
   emailSignal = signal('');
   passwordSignal = signal('');
   submitted = signal(false);
   isLoading = signal(false);
-  // Input Signals (optional from parent)
+  errorMessage = signal<string | null>(null);
+  successMessage = signal<string | null>(null);
   @Input({ required: true }) defaultName!: WritableSignal<string>;
   @Input({ required: true }) defaultEmail!: WritableSignal<string>;
 
-  // Firebase & Angular services
   fb = inject(FormBuilder);
   auth = inject(Auth);
   router = inject(Router);
-
-  // Reactive Form
+  firestore = inject(Firestore);
   signupForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
     email: ['', [Validators.required]],
@@ -57,10 +55,8 @@ export class Signup {
     ],
   });
 
-  // Form value as signal
   formValue = computed(() => this.signupForm.value);
 
-  // Reactive side-effect to sync signals with form values
   formEffect = effect(() => {
     const { name, email, password } = this.formValue();
     this.nameSignal.set(name);
@@ -68,12 +64,9 @@ export class Signup {
     this.passwordSignal.set(password);
   });
 
-  // Trim helper
   sanitizeInput(value: string): string {
     return value.trim();
   }
-
-  // Submit Handler
 
   async onSubmit(): Promise<void> {
     this.submitted.set(true);
@@ -87,17 +80,21 @@ export class Signup {
     const email = this.sanitizeInput(this.signupForm.value.email);
     const password = this.sanitizeInput(this.signupForm.value.password);
 
-    const formData = { name, email,password };
+    const formData = { name, email, password };
     localStorage.setItem('formdata', JSON.stringify(formData));
-
-    this.isLoading.set(true); // Start loader
+    this.isLoading.set(true);
 
     try {
       const userCredential: UserCredential =
         await createUserWithEmailAndPassword(this.auth, email, password);
-
-      console.log('Signup successful:', userCredential);
-      alert('Signup successful!');
+      const uid = userCredential.user.uid;
+      await setDoc(doc(this.firestore, 'users', uid), {
+        uid,
+        name,
+        email,
+        createdAt: new Date().toISOString(),
+      });
+      this.successMessage.set('signup successfull');
       this.signupForm.reset();
       this.submitted.set(false);
       this.router.navigate(['/login']);
@@ -105,21 +102,21 @@ export class Signup {
       console.error('Firebase error:', error);
       switch (error.code) {
         case 'auth/email-already-in-use':
-          alert('This email is already registered.');
+          this.errorMessage.set('This email is already registered.');
           break;
         case 'auth/invalid-email':
-          alert('Please enter a valid email address.');
+        this.errorMessage.set('Please enter a valid email address.');
           break;
         case 'auth/weak-password':
-          alert(
-            'Password should be at least 6 characters and include uppercase, number, and special character.'
-          );
+         this.errorMessage.set(
+           'Password should be at least 6 characters and include uppercase, number, and special character.'
+         );
           break;
         default:
-          alert('Signup failed: ' + error.message);
+         this.errorMessage.set('Signup failed: ' + error.message);
       }
     } finally {
-      this.isLoading.set(false); // Stop loader
+      this.isLoading.set(false);
     }
   }
 }
