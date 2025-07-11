@@ -2,22 +2,22 @@ import {
   Component,
   signal,
   WritableSignal,
-  effect,
   computed,
+  effect,
   inject,
 } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  ReactiveFormsModule,
   Validators,
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
   Auth,
   signInWithEmailAndPassword,
-  UserCredential,
   sendPasswordResetEmail,
+  UserCredential,
 } from '@angular/fire/auth';
 
 @Component({
@@ -37,58 +37,94 @@ export class Login {
     password: ['', Validators.required],
   });
 
-  emailSignal: WritableSignal<string> = signal('');
-  passwordSignal: WritableSignal<string> = signal('');
-  errorMessage: WritableSignal<string> = signal('');
-  submitted: WritableSignal<boolean> = signal(false);
+  emailSignal = signal('');
+  passwordSignal = signal('');
+  errorMessage = signal('');
+  successMessage = signal('');
+  submitted = signal(false);
 
   formValue = computed(() => this.loginForm.value);
 
   formEffect = effect(() => {
     const { email, password } = this.formValue();
-    this.emailSignal.set(email);
-    this.passwordSignal.set(password);
+    this.emailSignal.set(email ?? '');
+    this.passwordSignal.set(password ?? '');
   });
 
-  onLogin() {
+  sanitizeInput(value: string): string {
+    return value?.trim() ?? '';
+  }
+
+  onLogin(): void {
     this.submitted.set(true);
     this.errorMessage.set('');
+    this.successMessage.set('');
 
     if (this.loginForm.invalid) {
-      console.warn('Form is invalid');
+      this.errorMessage.set('Please fill out the form correctly.');
       return;
     }
 
-    const email = this.loginForm.value.email?.trim();
-    const password = this.loginForm.value.password;
-
-    console.log('Logging in with:', email, password);
+    const email = this.sanitizeInput(this.loginForm.get('email')?.value || '');
+    const password = this.sanitizeInput(
+      this.loginForm.get('password')?.value || ''
+    );
 
     if (!email || !password) {
       this.errorMessage.set('Email and password are required.');
       return;
     }
 
-    localStorage.setItem('formdata', JSON.stringify({ email, password }));
-
     signInWithEmailAndPassword(this.auth, email, password)
       .then((userCredential: UserCredential) => {
         console.log('Login successful:', userCredential);
+        this.successMessage.set('Login successful!');
         this.router.navigate(['/home']);
       })
       .catch((error: any) => {
-        console.error('Login error:', error);
-        this.errorMessage.set('Login failed: ' + error.message);
+        console.error('Firebase error:', error);
+        switch (error.code) {
+          case 'auth/invalid-email':
+            this.errorMessage.set('Invalid email address.');
+            break;
+          case 'auth/user-not-found':
+            this.errorMessage.set('No user found with this email.');
+            break;
+          case 'auth/wrong-password':
+            this.errorMessage.set('Incorrect password.');
+            break;
+          default:
+            this.errorMessage.set('Login failed: ' + error.message);
+        }
       });
   }
-  forgotPassword() {
-    const email = this.emailSignal();
+
+  forgotPassword(): void {
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    const email = this.sanitizeInput(this.emailSignal());
+
     if (!email) {
       this.errorMessage.set('Please enter your email to reset password.');
       return;
     }
+
     sendPasswordResetEmail(this.auth, email)
-      .then(() => this.errorMessage.set('Password reset email sent.'))
-      .catch((err) => this.errorMessage.set('Reset failed: ' + err.message));
+      .then(() => {
+        this.successMessage.set('Password reset email sent.');
+      })
+      .catch((error: any) => {
+        console.error('Reset error:', error);
+        this.errorMessage.set('Reset failed: ' + error.message);
+      });
+  }
+
+  get error() {
+    return this.errorMessage();
+  }
+
+  get success() {
+    return this.successMessage();
   }
 }
