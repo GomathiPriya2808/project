@@ -1,12 +1,18 @@
 import { Component, inject, signal } from '@angular/core';
 import { Auth, sendPasswordResetEmail } from '@angular/fire/auth';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-forgot-password',
+  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './forgot-password.html',
-  styleUrl: './forgot-password.css',
+  styleUrls: ['./forgot-password.css'],
 })
 export class ForgotPassword {
   fb = inject(FormBuilder);
@@ -34,11 +40,19 @@ export class ForgotPassword {
       return;
     }
 
-    sendPasswordResetEmail(this.auth, email)
+    const actionCodeSettings = {
+      url: 'https://bakery-ac000.web.app/password-changed', // ✅ Replace with your hosted page
+      handleCodeInApp: false,
+    };
+
+    sendPasswordResetEmail(this.auth, email, actionCodeSettings)
       .then(() => {
-        this.successMessage.set('✅ Password reset email sent.');
+        this.successMessage.set(
+          '✅ Password reset email sent. Please check your inbox.'
+        );
       })
       .catch((error) => {
+        console.error('Password reset error:', error);
         switch (error.code) {
           case 'auth/user-not-found':
             this.errorMessage.set('No account found with this email.');
