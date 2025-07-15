@@ -42,6 +42,7 @@ export class Login {
   errorMessage = signal('');
   successMessage = signal('');
   submitted = signal(false);
+  showPassword = false;
 
   formValue = computed(() => this.loginForm.value);
 
@@ -105,18 +106,31 @@ export class Login {
 
     const email = this.sanitizeInput(this.emailSignal());
 
-    if (!email) {
-      this.errorMessage.set('Please enter your email to reset password.');
+    if (!email || !email.includes('@')) {
+      this.errorMessage.set(
+        'Please enter a valid email to reset the password.'
+      );
       return;
     }
 
+    console.log('Sending reset to:', email); // Debug line
+
     sendPasswordResetEmail(this.auth, email)
       .then(() => {
-        this.successMessage.set('Password reset email sent.');
+        this.successMessage.set('✅ Password reset email sent.');
       })
-      .catch((error: any) => {
+      .catch((error) => {
         console.error('Reset error:', error);
-        this.errorMessage.set('Reset failed: ' + error.message);
+        switch (error.code) {
+          case 'auth/user-not-found':
+            this.errorMessage.set('No account found with this email.');
+            break;
+          case 'auth/invalid-email':
+            this.errorMessage.set('Invalid email address.');
+            break;
+          default:
+            this.errorMessage.set('Reset failed: ' + error.message);
+        }
       });
   }
 
@@ -126,5 +140,8 @@ export class Login {
 
   get success() {
     return this.successMessage();
+  }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }
