@@ -17,9 +17,11 @@ import { Router, RouterLink } from '@angular/router';
 import {
   Auth,
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   UserCredential,
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { signInWithPopup } from 'firebase/auth';
 @Component({
   selector: 'app-signup',
   standalone: true,
@@ -105,18 +107,40 @@ export class Signup {
           this.errorMessage.set('This email is already registered.');
           break;
         case 'auth/invalid-email':
-        this.errorMessage.set('Please enter a valid email address.');
+          this.errorMessage.set('Please enter a valid email address.');
           break;
         case 'auth/weak-password':
-         this.errorMessage.set(
-           'Password should be at least 6 characters and include uppercase, number, and special character.'
-         );
+          this.errorMessage.set(
+            'Password should be at least 6 characters and include uppercase, number, and special character.'
+          );
           break;
         default:
-         this.errorMessage.set('Signup failed: ' + error.message);
+          this.errorMessage.set('Signup failed: ' + error.message);
       }
     } finally {
       this.isLoading.set(false);
+    }
+  }
+  async signInWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(this.auth, provider);
+      const user = result.user;
+
+      // Save user to Firestore
+      await setDoc(doc(this.firestore, 'users', user.uid), {
+        uid: user.uid,
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        provider: 'google',
+        createdAt: new Date().toISOString(),
+      });
+
+      console.log('Logged in', user.displayName);
+      this.router.navigate(['/home']);
+    } catch (error) {
+      console.log('Google sign-in error:', error);
     }
   }
 }
