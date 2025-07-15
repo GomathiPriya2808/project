@@ -37,6 +37,8 @@ export class Signup {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
+  showPassword = false;
+
   @Input({ required: true }) defaultName!: WritableSignal<string>;
   @Input({ required: true }) defaultEmail!: WritableSignal<string>;
 
@@ -143,4 +145,8 @@ export class Signup {
       console.log('Google sign-in error:', error);
     }
   }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
 }
